@@ -1,7 +1,9 @@
 import os
 import numpy as np
 from PIL import Image
-from realesrgan import RealESRGAN
+from realesrgan import RealESRGANer
+from realesrgan.archs.srvgg_arch import SRVGGNetCompact
+import torch
 import threading
 from typing import Optional
 
@@ -22,22 +24,31 @@ class RealESRGANUpscaler:
             self.models = {}
             self.initialized = True
     
-    def get_model(self, model_name: str) -> RealESRGAN:
+    def get_model(self, model_name: str) -> RealESRGANer:
         if model_name not in self.models:
             with self._lock:
                 if model_name not in self.models:
-                    model_path = f"models/{model_name}"
-                    if not os.path.exists(f"{model_path}.param"):
-                        raise FileNotFoundError(f"Model {model_name} not found in models directory")
+                    model_path = f"models/{model_name}.pth"
+                    if not os.path.exists(model_path):
+                        raise FileNotFoundError(f"Model {model_name}.pth not found in models directory")
                     
-                    self.models[model_name] = RealESRGAN(
-                        scale=4 if "x4" in model_name else 2,
+                    if "anime" in model_name:
+                        model = SRVGGNetCompact(num_in_ch=3, num_out_ch=3, num_feat=64, num_conv=32, upscale=4, act_type='prelu')
+                        netscale = 4
+                    else:
+                        from realesrgan.archs.rrdbnet_arch import RRDBNet
+                        model = RRDBNet(num_in_ch=3, num_out_ch=3, num_feat=64, num_block=23, num_grow_ch=32, scale=4)
+                        netscale = 4
+                    
+                    self.models[model_name] = RealESRGANer(
+                        scale=netscale,
                         model_path=model_path,
+                        model=model,
                         tile=400,
                         tile_pad=10,
                         pre_pad=0,
                         half=False,
-                        gpu_id=None
+                        device='cpu'
                     )
         
         return self.models[model_name]
@@ -57,7 +68,7 @@ class RealESRGANUpscaler:
         model = self.get_model(model_name)
         
         img_array = np.array(image)
-        result_array = model.enhance(img_array, outscale=scale)
+        result_array, _ = model.enhance(img_array, outscale=scale)
         
         return Image.fromarray(result_array)
     
