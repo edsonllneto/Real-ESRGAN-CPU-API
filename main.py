@@ -170,7 +170,9 @@ async def get_models():
         "available_models": upscaler.get_available_models(),
         "model_descriptions": {
             "realesrgan-x4plus": "Best for real photos and general images",
-            "realesrgan-x4plus-anime": "Optimized for anime and illustrations"
+            "realesrgan-x4plus-anime": "Optimized for anime and illustrations",
+            "realesr-general-x4v3": "Small, fast general purpose model (v3)",
+            "realesr-general-wdn-x4v3": "Small model with denoising (v3)"
         }
     }
 

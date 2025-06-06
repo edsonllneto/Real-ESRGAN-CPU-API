@@ -25,7 +25,7 @@ RUN pip install --upgrade pip setuptools wheel
 # Copy requirements and install Python dependencies
 COPY requirements.txt .
 RUN pip install --no-cache-dir --user torch==2.1.0+cpu torchvision==0.16.0+cpu --index-url https://download.pytorch.org/whl/cpu
-RUN pip install --no-cache-dir --user fastapi==0.104.1 uvicorn[standard]==0.24.0 pillow==10.1.0 numpy==1.24.4 realesrgan==1.0.7 python-multipart==0.0.6
+RUN pip install --no-cache-dir --user fastapi==0.104.1 uvicorn[standard]==0.24.0 pillow==10.1.0 numpy==1.24.4 realesrgan==0.3.0 python-multipart==0.0.6
 
 # Runtime stage with slim instead of Alpine for better compatibility
 FROM python:3.10-slim

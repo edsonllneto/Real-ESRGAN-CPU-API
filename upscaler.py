@@ -35,6 +35,9 @@ class RealESRGANUpscaler:
                     if "anime" in model_name:
                         model = SRVGGNetCompact(num_in_ch=3, num_out_ch=3, num_feat=64, num_conv=32, upscale=4, act_type='prelu')
                         netscale = 4
+                    elif "general" in model_name:
+                        model = SRVGGNetCompact(num_in_ch=3, num_out_ch=3, num_feat=64, num_conv=32, upscale=4, act_type='prelu')
+                        netscale = 4
                     else:
                         from realesrgan.archs.rrdbnet_arch import RRDBNet
                         model = RRDBNet(num_in_ch=3, num_out_ch=3, num_feat=64, num_block=23, num_grow_ch=32, scale=4)
@@ -74,7 +77,7 @@ class RealESRGANUpscaler:
     
     @staticmethod
     def get_available_models():
-        return ["realesrgan-x4plus", "realesrgan-x4plus-anime"]
+        return ["realesrgan-x4plus", "realesrgan-x4plus-anime", "realesr-general-x4v3", "realesr-general-wdn-x4v3"]
     
     @staticmethod
     def validate_model(model_name: str) -> bool:
